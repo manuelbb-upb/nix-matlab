@@ -2,7 +2,7 @@ diff --git i/dist/matlab/engine/__init__.py w/dist/matlab/engine/__init__.py
 index 45bf9ae..d606284 100644
 --- i/dist/matlab/engine/__init__.py
 +++ w/dist/matlab/engine/__init__.py
-@@ -50,10 +50,13 @@ except Exception as firstE:
+@@ -53,10 +53,13 @@ except Exception as firstE:
  
  if firstExceptionMessage:
      try:
@@ -24,7 +24,7 @@ diff --git i/setup.py w/setup.py
 index 49149e5..9f45560 100644
 --- i/setup.py
 +++ w/setup.py
-@@ -72,7 +72,6 @@ class BuildEngine(build_py):
+@@ -125,7 +125,6 @@ class BuildEngine(build_py):
      def run(self):
          build_py.run(self)
          _target_dir = os.path.join(self.build_lib, _matlab_package, _engine_package)
