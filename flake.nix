@@ -108,7 +108,7 @@
         same as the one generated from your installation.
       '';
     };
-    matlab-python-package-with-python-by-version = python: version: python.pkgs.buildPythonPackage rec {
+    matlab-python-package-with-python-by-version = pythonPkgs: version: pythonPkgs.buildPythonPackage rec {
       name = "matlab-python-package";
       unpackCmd = ''
         cp -r ${src}/ matlab-python-src
@@ -131,7 +131,7 @@
         description = "Matlab engine for python - Nix package, slightly patched for a Nix installation";
       };
     };
-    matlab-python-package-by-version = pkgs.python3.pkgs.buildPythonPackage pkgs.python;
+    matlab-python-package-by-version = pkgs.python3.pkgs pkgs.python;
   in {
     inherit matlab-python-package-by-version matlab-python-package-with-python-by-version;
 
