@@ -13,6 +13,7 @@
     # supported
     pkgs = nixpkgs.legacyPackages.x86_64-linux;
     targetPkgs = import ./common.nix;
+    defaultMatlabVersion = "2022a";
     runScriptPrefix = {errorOut ? true}: ''
       # Needed for simulink even on wayland systems
       export QT_QPA_PLATFORM=xcb
@@ -108,6 +109,29 @@
     };
   in {
 
+    matlab-python-package-by-version = version: pkgs.python3.pkgs.buildPythonPackage rec {
+      name = "matlab-python-package";
+      unpackCmd = ''
+        cp -r ${src}/ matlab-python-src
+        sourceRoot=$PWD/matlab-python-src
+      '';
+      patches = [
+        # Matlab designed this python package to be installed imperatively, and
+        # on an impure system - running `python setup.py install` creates an
+        # `_arch.txt` file in /usr/local/lib/python3.9/site-packages/matlab (or
+        # alike), which tells the `__init__.py` where matlab is installed and
+        # where do some .so files reside. This doesn't suit a nix installation,
+        # and the best way IMO to work around this is to patch the __init__.py
+        # file to use the $MATLAB_INSTALL_DIR to find these shared objects and
+        # not read any _arch.txt file.
+        ./python-no_arch.txt-file.patch
+      ];
+      src = generatePythonSrc version;
+      meta = metaCommon // {
+        homepage = "https://www.mathworks.com/help/matlab/matlab-engine-for-python.html";
+        description = "Matlab engine for python - Nix package, slightly patched for a Nix installation";
+      };
+    };
     packages.x86_64-linux.matlab = pkgs.buildFHSUserEnv {
       name = "matlab";
       inherit targetPkgs;
@@ -159,34 +183,13 @@
         description = "A bash shell from which you can install matlab or launch matlab from CLI";
       };
     };
+   
     # This could have been defined as an overlay for the python3.pkgs attribute
     # set, defined with `packageOverrides`, but this won't bring any benefit
     # because in order to use the matlab engine, one needs to be inside an
     # FHSUser environment anyway.
-    packages.x86_64-linux.matlab-python-package = pkgs.python3.pkgs.buildPythonPackage rec {
-      # No version - can be used with every matlab version (R2021b or R2021a etc)
-      name = "matlab-python-package";
-      unpackCmd = ''
-        cp -r ${src}/ matlab-python-src
-        sourceRoot=$PWD/matlab-python-src
-      '';
-      patches = [
-        # Matlab designed this python package to be installed imperatively, and
-        # on an impure system - running `python setup.py install` creates an
-        # `_arch.txt` file in /usr/local/lib/python3.9/site-packages/matlab (or
-        # alike), which tells the `__init__.py` where matlab is installed and
-        # where do some .so files reside. This doesn't suit a nix installation,
-        # and the best way IMO to work around this is to patch the __init__.py
-        # file to use the $MATLAB_INSTALL_DIR to find these shared objects and
-        # not read any _arch.txt file.
-        ./python-no_arch.txt-file.patch
-      ];
-      src = generatePythonSrc "2022a";
-      meta = metaCommon // {
-        homepage = "https://www.mathworks.com/help/matlab/matlab-engine-for-python.html";
-        description = "Matlab engine for python - Nix package, slightly patched for a Nix installation";
-      };
-    };
+    packages.x86_64-linux.matlab-python-package = matlab-python-package-by-version defaultMatlabVersion;
+ 
     packages.x86_64-linux.matlab-python-shell = pkgs.buildFHSUserEnv {
       name = "matlab-python-shell";
       inherit targetPkgs;
