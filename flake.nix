@@ -110,6 +110,7 @@
     };
     matlab-python-package-with-python-by-version = pythonPkgs: version: pythonPkgs.buildPythonPackage rec {
       name = "matlab-python-package";
+      src = generatePythonSrc version;
       unpackCmd = ''
         cp -r ${src}/ matlab-python-src
         sourceRoot=$PWD/matlab-python-src
@@ -125,13 +126,12 @@
         # not read any _arch.txt file.
         ./python-no_arch.txt-file.patch
       ];
-      src = generatePythonSrc version;
       meta = metaCommon // {
         homepage = "https://www.mathworks.com/help/matlab/matlab-engine-for-python.html";
         description = "Matlab engine for python - Nix package, slightly patched for a Nix installation";
       };
     };
-    matlab-python-package-by-version = pkgs.python3.pkgs pkgs.python;
+    matlab-python-package-by-version = matlab-python-package-with-python-by-version pkgs.python3.pkgs pkgs.python;
   in {
     inherit matlab-python-package-by-version matlab-python-package-with-python-by-version;
 
