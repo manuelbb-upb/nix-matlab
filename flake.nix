@@ -95,6 +95,7 @@
       sha256 = {
         "2022a" = "19v09q2y2liinalwxszq3xq70y6mbicbkvzgjvav195pwmz3s36v";
         "2021b" = "19wdzglr8j6966d3s777mckry2kcn99xbfwqyl5j02ir3vidd23h";
+        "2024b" = "0ggdpx202f8jga0lpafjs7b6lqv2a99va9qlj6zw3b8ym0pfda96";
       }.${version};
       hashMode = "recursive";
       message = ''
