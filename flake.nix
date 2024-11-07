@@ -107,8 +107,6 @@
         same as the one generated from your installation.
       '';
     };
-  in {
-
     matlab-python-package-by-version = version: pkgs.python3.pkgs.buildPythonPackage rec {
       name = "matlab-python-package";
       unpackCmd = ''
@@ -132,6 +130,9 @@
         description = "Matlab engine for python - Nix package, slightly patched for a Nix installation";
       };
     };
+  in {
+    inherit matlab-python-package-by-version;
+
     packages.x86_64-linux.matlab = pkgs.buildFHSUserEnv {
       name = "matlab";
       inherit targetPkgs;
